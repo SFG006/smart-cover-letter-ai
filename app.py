@@ -1,4 +1,4 @@
-from flask import Flask, render_template , request , abort , redirect, url_for, session
+from flask import Flask, render_template , request , abort , redirect, url_for, session , flash
 from werkzeug.utils import secure_filename
 import pdfplumber
 import requests
@@ -40,47 +40,52 @@ def extract_txt(pdf_file):
         raise RuntimeError(f"❌ Failed to extract text from PDF: {str(e)}")
 
 # Generate Cover Letter
-def generate_cover_letter(resume_text, job_text):
+def generate_cover_letter(resume_text, job_text, contact_block):
     """Generate cover letter with robust API handling"""
     if not resume_text and not job_text:
         raise ValueError("Missing required input")
     # Prepare the prompt
     prompt = f"""You are a professional cover letter writing assistant AI.
 
-    Your job is to take the following resume and job description and write a fully personalized, complete, and professional cover letter. Use strong formatting, confident language, and ensure there are **no placeholders** left.
+    Your task is to write a fully personalized and professional cover letter using the resume and job description provided below. The tone should be confident, enthusiastic, and natural — similar to a human writing style. Do not include any placeholders or incomplete information.
 
     ---
 
-    ### Resume:
+    Start the letter with this full name, extracted from the resume: [Extracted Name from resume_text]  
+    Then include this contact block exactly as provided — do not modify or override it with content from the resume:
+
+    {contact_block}
+
+    ---
+
+    Resume:
     {resume_text}
 
     ---
 
-    ### Job Description:
+    Job Description:
     {job_text}
 
     ---
 
-    ### Output Instructions:
-    - Always start the letter with this contact block:
-      **Shivansh Gupta**  
-      shivanshg005@gmail.com | +91 6306550271  
-      [GitHub](https://github.com/shivanshgupta005) | [LinkedIn](https://linkedin.com/in/shivanshgupta005)
+    Instructions for the Cover Letter:
+    - Start the letter with this full name, extracted from the resume {resume_text}: [Extracted Name from resume_text]  
+    - Then include this contact block {contact_block} exactly as provided — do not modify or override it with content from the resume:
+    - If the company name is provided, use it exactly. If not, leave it as “[Company Name]” — do not invent a new one.
+    - Use this subject line format: **Application for [Job Title] Position** — where the job title is inferred from the job description.
+    - Start with a warm, enthusiastic introduction mentioning the job role and why the applicant is interested.
+    - Highlight 1–2 relevant achievements, certifications, or projects that match the job requirements.
+    - Emphasize relevant technical skills such as cloud platforms (AWS, Azure, GCP), scripting (Python, Bash), Kubernetes, Docker, Terraform, etc., based on the resume.
+    - Briefly mention soft skills or extracurriculars (e.g., mentoring, communication, creative projects) that show cultural fit.
+    - Include a short paragraph about why the applicant is excited to work at the company named in the job description.
+    - End with a confident call to action and close with this format:
 
-    - Add the **current date** automatically.
-    - Invent realistic company name and address based on the job description, if not given.
-    - Use the subject line: **Application for [Job Title] Position** — inferred from the job description.
-    - In the body:
-      - Start with an enthusiastic introduction about the job
-      - Highlight 1–2 projects from the resume that are most relevant
-      - Emphasize relevant tech stacks and tools (Python, Flask, Docker, etc.)
-      - Mention any creative or soft skills from the resume (e.g., video editing)
-    - Close with a confident call to action and professional sign-off.
-    - Keep formatting clean and formal (with bold headings where needed).
-    - Do **not** generate anything beyond the cover letter.
+    Sincerely,  
+    [Extracted Name from resume_text]
 
-    Now, write the full professional cover letter based on the above.
-    Keep your writing structured, polite, and similar to a real-world corporate application letter, not overly creative or abstract.
+    ---
+
+    Return only the complete cover letter in plain text. Do not include markdown formatting, brackets, or any extra symbols.
     """
 
     result = None # Default value
@@ -143,16 +148,41 @@ def index():
             resume_file = request.files["resume"]
             job_text = request.form.get("job_description",'').strip()
 
+            # Collect user-provided contact info
+            # name = request.form.get("name", "Applicant").strip()
+            email = request.form.get("email", "").strip()
+            phone = request.form.get("phone", "").strip()
+            github = request.form.get("github", "").strip()
+            linkedin = request.form.get("linkedin", "").strip()
+
+            # Build the contact block
+            contact_block = f"{email}"
+            if phone:
+                pass
+                contact_block += f" | {phone}"
+            if github:
+                contact_block += f"\n[GitHub]({github})"
+            if linkedin:
+                contact_block += f" | [LinkedIn]({linkedin})"
+
             if resume_file.filename == '':
                 abort(400,"No selected file")
             if not allowed_file(resume_file.filename):
                 abort(400,"Only PDF files are allowed")
             if len(job_text) < 20:
-                abort(400,"Job description is too short (min 20 characters)")
+                # Preserve other inputs
+                session["form_data"] = {
 
+        "email": request.form.get("email", "").strip(),
+        "phone": request.form.get("phone", "").strip(),
+        "github": request.form.get("github", "").strip(),
+        "linkedin": request.form.get("linkedin", "").strip()
+    }
+                flash("❗ Job description must be at least 20 characters long.", "danger")
+                return redirect(url_for("index"))
             # Process in memory without saving
             resume_text = extract_txt(resume_file.stream)
-            cover_letter = generate_cover_letter(resume_text, job_text)
+            cover_letter = generate_cover_letter(resume_text, job_text, contact_block)
             session["cover_letter"] = cover_letter
             return redirect(url_for("index"))
         except ValueError as e:
@@ -164,7 +194,8 @@ def index():
             abort(500, "Internal server error")
         # Render the GET page
     cover_letter = session.pop("cover_letter", None)  # get once, then clear
-    return render_template("index.html", result = cover_letter)
+    form_data = session.pop("form_data", {})  # Get it once and clear it
+    return render_template("index.html", result = cover_letter, form_data = form_data)
 
 
 if __name__ == '__main__':
