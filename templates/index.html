@@ -96,13 +96,28 @@
 
   {% if result %}
     <div class="cover-letter-box">
-      <h5>✨ Generated Cover Letter:</h5>
-      <p>{{ result }}</p>
+        <h5>✨ Generated Cover Letter:</h5>
+
+        <pre id="coverLetterText" style="white-space: pre-wrap;">{{ result }}</pre>
+
+        <button class="btn btn-outline-primary mt-2" onclick="copyCoverLetter()">📋 Copy to Clipboard</button>
     </div>
   {% endif %}
+
 </div>
 
 <!-- Bootstrap JS (optional) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  function copyCoverLetter() {
+    const text = document.getElementById("coverLetterText").innerText;
+    navigator.clipboard.writeText(text).then(function () {
+      alert("✅ Cover letter copied to clipboard!");
+    }, function (err) {
+      alert("❌ Failed to copy: " + err);
+    });
+  }
+</script>
+
 </body>
 </html>

@@ -149,7 +149,6 @@ def index():
             job_text = request.form.get("job_description",'').strip()
 
             # Collect user-provided contact info
-            # name = request.form.get("name", "Applicant").strip()
             email = request.form.get("email", "").strip()
             phone = request.form.get("phone", "").strip()
             github = request.form.get("github", "").strip()
@@ -200,3 +199,4 @@ def index():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)), debug=True)
+
