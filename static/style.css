@@ -1,0 +1,128 @@
+body {
+  background-color: #121212;
+  color: #e0e0e0;
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  margin-top: 40px;
+  max-width: 840px;
+}
+
+.card {
+  background-color: #1e1e1e;
+  border: none;
+  border-radius: 14px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+}
+
+.form-control,
+.form-select {
+  background-color: #2a2a2a;
+  color: #ffffff;
+  border: 1px solid #444;
+  transition: all 0.3s ease;
+}
+
+.form-control::placeholder {
+  color: #aaa;
+}
+
+.form-control:focus,
+.form-select:focus,
+textarea:focus {
+  background-color: #1c1c1c !important;
+  color: #f1f1f1;
+  border-color: #5e9cff;
+  box-shadow: 0 0 0 0.2rem rgba(94, 156, 255, 0.25);
+}
+
+.form-label {
+  color: #e0e0e0;
+  margin-bottom: 4px;
+}
+
+.btn-primary {
+  border-radius: 8px;
+  padding: 10px 25px;
+  font-weight: 600;
+  background-color: #0d6efd;
+  border: none;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: #0b5ed7;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(13, 110, 253, 0.3);
+}
+
+.btn-outline-primary {
+  color: #0d6efd;
+  border: 1px solid #0d6efd;
+  transition: all 0.3s ease;
+}
+
+.btn-outline-primary:hover {
+  background-color: #0d6efd;
+  color: #fff;
+}
+
+.cover-letter-box {
+  white-space: pre-line;
+  background: #1f1f1f;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 25px;
+  margin-top: 30px;
+  color: #f1f1f1;
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.05);
+}
+
+/* Alert Flash Messages */
+.alert {
+  transition: all 0.4s ease;
+  margin-top: 0.5rem;
+}
+
+.alert-warning {
+  background: rgba(255, 255, 0, 0.1);
+  color: #ffe45e;
+  border-left: 4px solid #ffcc00;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 10px rgba(255, 255, 0, 0.2);
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.alert-danger {
+  background: rgba(255, 0, 0, 0.1);
+  color: #ff7b7b;
+  border-left: 4px solid #ff4c4c;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 10px rgba(255, 0, 0, 0.2);
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.alert-success {
+  background: rgba(0, 255, 0, 0.1);
+  color: #a1f7a1;
+  border-left: 4px solid #4cff4c;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 10px rgba(0, 255, 0, 0.2);
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.app-heading {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #ffffff;
+  text-align: center;
+  letter-spacing: 0.5px;
+  margin-bottom: 1.5rem;
+}
