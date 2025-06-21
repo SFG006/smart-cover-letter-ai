@@ -1,5 +1,4 @@
 from flask import Flask, render_template , request , abort , redirect, url_for, session , flash
-from werkzeug.utils import secure_filename
 import pdfplumber
 import requests
 import os
