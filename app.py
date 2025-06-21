@@ -4,6 +4,7 @@ import pdfplumber
 import requests
 import os
 from dotenv import load_dotenv
+import  re
 
 
 # Load environment variables from .env file
@@ -38,6 +39,45 @@ def extract_txt(pdf_file):
         raise ValueError("Invalid PDF file")
     except Exception as e:
         raise RuntimeError(f"❌ Failed to extract text from PDF: {str(e)}")
+
+#  Validate and Clean the Contact Inputs Before Displaying
+def build_clean_contact_block(email, phone, github, linkedin):
+    contact = ""
+    warnings = []
+
+    # ✅ Email validation
+    if email:
+        if re.match(r"[^@]+@[^@]+\.[^@]+", email):
+            contact += email
+        else:
+            warnings.append("⚠ Invalid email format.")
+
+    # ✅ Phone validation: 10 digits, digits only
+    if phone:
+        digits = re.sub(r"(?!^\+)\D", "", phone)
+        if len(digits) == 13:
+            if contact:
+                contact += " | "
+            contact += f"{digits}"
+        else:
+            warnings.append("⚠ Phone must be 10 digits (e.g., 9876543210).")
+
+    # ✅ GitHub URL validation
+    if github:
+        if re.match(r"^https?://(www\.)?github\.com/[\w-]+/?$", github.strip()):
+            contact += f"\nGitHub: {github.strip()}"
+        else:
+            warnings.append("⚠ Invalid GitHub URL. Use format: https://github.com/username")
+
+    # ✅ LinkedIn URL validation
+    if linkedin:
+        if re.match(r"^https?://(www\.)?linkedin\.com/in/[\w-]+/?$", linkedin.strip()):
+            contact += f" | LinkedIn: {linkedin.strip()}"
+        else:
+            warnings.append("⚠ Invalid LinkedIn URL. Use format: https://www.linkedin.com/in/username")
+
+    return contact, warnings
+
 
 # Generate Cover Letter
 def generate_cover_letter(resume_text, job_text, contact_block):
@@ -140,61 +180,61 @@ def generate_cover_letter(resume_text, job_text, contact_block):
 def index():
     if request.method == 'POST':
         try:
-            # Validate inputs
+            # Always store form data early
+            form_data = {
+                "email": request.form.get("email", "").strip(),
+                "phone": request.form.get("phone", "").strip(),
+                "github": request.form.get("github", "").strip(),
+                "linkedin": request.form.get("linkedin", "").strip(),
+                "job_description": request.form.get("job_description", "").strip(),
+                "country_code": request.form.get("country_code", "+91")
+
+            }
+            session["form_data"] = form_data
+
             if "resume" not in request.files:
                 abort(400,"No resume file uploaded")
 
-            # Get uploaded resume PDF
             resume_file = request.files["resume"]
-            job_text = request.form.get("job_description",'').strip()
+            job_text = form_data["job_description"]
 
-            # Collect user-provided contact info
-            email = request.form.get("email", "").strip()
-            phone = request.form.get("phone", "").strip()
-            github = request.form.get("github", "").strip()
-            linkedin = request.form.get("linkedin", "").strip()
+            full_phone = f'{form_data["country_code"]} {form_data["phone"]}'
+            contact_block, warnings = build_clean_contact_block(
+                form_data["email"],
+                full_phone,
+                form_data["github"],
+                form_data["linkedin"]
+            )
 
-            # Build the contact block
-            contact_block = f"{email}"
-            if phone:
-                pass
-                contact_block += f" | {phone}"
-            if github:
-                contact_block += f"\n[GitHub]({github})"
-            if linkedin:
-                contact_block += f" | [LinkedIn]({linkedin})"
+            # Show any contact warnings
+            if warnings:
+                for w in warnings:
+                    flash(w, "warning")
+                return redirect(url_for("index"))   # Don't proceed to generate the cover letter
+
+
 
             if resume_file.filename == '':
-                abort(400,"No selected file")
+                abort(400, "No selected file")
             if not allowed_file(resume_file.filename):
-                abort(400,"Only PDF files are allowed")
+                abort(400, "Only PDF files are allowed")
             if len(job_text) < 20:
-                # Preserve other inputs
-                session["form_data"] = {
-
-        "email": request.form.get("email", "").strip(),
-        "phone": request.form.get("phone", "").strip(),
-        "github": request.form.get("github", "").strip(),
-        "linkedin": request.form.get("linkedin", "").strip()
-    }
                 flash("❗ Job description must be at least 20 characters long.", "danger")
                 return redirect(url_for("index"))
-            # Process in memory without saving
+
             resume_text = extract_txt(resume_file.stream)
             cover_letter = generate_cover_letter(resume_text, job_text, contact_block)
             session["cover_letter"] = cover_letter
+            session.pop("form_data", None)  # clean after success
             return redirect(url_for("index"))
-        except ValueError as e:
-            abort(400,str(e))
-        except RuntimeError as e:
-            abort(503,str(e))
+
         except Exception as e:
             app.logger.error(f"Unexpected error: {str(e)}")
             abort(500, "Internal server error")
-        # Render the GET page
-    cover_letter = session.pop("cover_letter", None)  # get once, then clear
-    form_data = session.pop("form_data", {})  # Get it once and clear it
-    return render_template("index.html", result = cover_letter, form_data = form_data)
+
+    cover_letter = session.pop("cover_letter", None)
+    form_data = session.pop("form_data", {})  # stay safe
+    return render_template("index.html", result=cover_letter, form_data=form_data)
 
 
 if __name__ == '__main__':
