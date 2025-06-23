@@ -1,31 +1,28 @@
-from flask import Flask, render_template , request , abort , redirect, url_for, session , flash
+from flask import Flask, render_template, request, abort, redirect, url_for, session, flash
 import pdfplumber
-import requests
+import google.generativeai as genai
 import os
-from dotenv import load_dotenv
-import  re
+import re
 
-
-# Load environment variables from .env file
-load_dotenv()
-
-# Initialize the Flask application
+# ───────────────────────────────────────
+# 🔧 Flask App Configuration
+# ───────────────────────────────────────
 app = Flask(__name__)
-app.config["MAX_CONTENT_LENGTH"] = 7 * 1024 * 1024  # 7MB file size
-app.config['UPLOAD_FOLDER'] = 'uploads'
-app.config['ALLOWED_EXTENSIONS'] = {'pdf'}
-app.secret_key = os.urandom(24)
+app.config["MAX_CONTENT_LENGTH"] = 7 * 1024 * 1024  # Restrict file uploads to max 7MB
+app.config['ALLOWED_EXTENSIONS'] = {'pdf'}          # Only allow PDF uploads
+app.secret_key = os.urandom(24)                     # Used for session security
 
-# Ensure upload folder exists
-os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-
-# Function to check file is pdf format or not
+# ───────────────────────────────────────
+# 📂 File Format Check
+# ───────────────────────────────────────
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
-# Function to extract text from PDF
+# ───────────────────────────────────────
+# 📄 Extract Text From PDF
+# ───────────────────────────────────────
 def extract_txt(pdf_file):
-    """Extract text from PDF file with improved error handling"""
+    """Extracts all readable text from a PDF using pdfplumber"""
     text = ""
     try:
         with pdfplumber.open(pdf_file) as pdf:
@@ -37,53 +34,54 @@ def extract_txt(pdf_file):
     except pdfplumber.PDFSyntaxError:
         raise ValueError("Invalid PDF file")
     except Exception as e:
-        raise RuntimeError(f"❌ Failed to extract text from PDF: {str(e)}")
+        raise RuntimeError(f"❌ Failed to extract text: {str(e)}")
 
-#  Validate and Clean the Contact Inputs Before Displaying
+# ───────────────────────────────────────
+# 🔍 Validate & Build Contact Block
+# ───────────────────────────────────────
 def build_clean_contact_block(email, phone, github, linkedin):
     contact = ""
     warnings = []
 
-    # ✅ Email validation
+    # ✅ Check Email
     if email:
         if re.match(r"[^@]+@[^@]+\.[^@]+", email):
             contact += email
         else:
             warnings.append("⚠ Invalid email format.")
 
-    # ✅ Phone validation: 10 digits, digits only
+    # ✅ Check Phone (we expect country code + 10 digits = 13 chars)
     if phone:
         digits = re.sub(r"(?!^\+)\D", "", phone)
         if len(digits) == 13:
-            if contact:
-                contact += " | "
-            contact += f"{digits}"
+            contact += (" | " if contact else "") + digits
         else:
             warnings.append("⚠ Phone must be 10 digits (e.g., 9876543210).")
 
-    # ✅ GitHub URL validation
+    # ✅ Check GitHub URL
     if github:
         if re.match(r"^https?://(www\.)?github\.com/[\w-]+/?$", github.strip()):
             contact += f"\nGitHub: {github.strip()}"
         else:
-            warnings.append("⚠ Invalid GitHub URL. Use format: https://github.com/username")
+            warnings.append("⚠ Invalid GitHub URL.")
 
-    # ✅ LinkedIn URL validation
+    # ✅ Check LinkedIn URL
     if linkedin:
         if re.match(r"^https?://(www\.)?linkedin\.com/in/[\w-]+/?$", linkedin.strip()):
             contact += f" | LinkedIn: {linkedin.strip()}"
         else:
-            warnings.append("⚠ Invalid LinkedIn URL. Use format: https://www.linkedin.com/in/username")
+            warnings.append("⚠ Invalid LinkedIn URL.")
 
     return contact, warnings
 
-
-# Generate Cover Letter
+# ───────────────────────────────────────
+# 🤖 Generate Cover Letter with Gemini
+# ───────────────────────────────────────
 def generate_cover_letter(resume_text, job_text, contact_block):
-    """Generate cover letter with robust API handling"""
-    if not resume_text and not job_text:
-        raise ValueError("Missing required input")
-    # Prepare the prompt
+    if not resume_text or not job_text:
+        raise ValueError("Missing input!")
+
+    # 🧠 Prompt to guide Gemini
     prompt = f"""You are a professional cover letter writing assistant AI.
 
     Your task is to write a fully personalized and professional cover letter using the resume and job description provided below. The tone should be confident, enthusiastic, and natural — similar to a human writing style. Do not include any placeholders or incomplete information.
@@ -127,59 +125,37 @@ def generate_cover_letter(resume_text, job_text, contact_block):
     Return only the complete cover letter in plain text. Do not include markdown formatting, brackets, or any extra symbols.
     """
 
-    result = None # Default value
+    # 🔑 Load Gemini API key
+    apikey = os.environ.get("GOOGLE_API_KEY")
+    if not apikey:
+        raise ValueError("API key not found!")
 
-    # To check API key exists
-    api_key = os.getenv("OPENROUTER_API_KEY")
-    if not api_key:
-        raise ValueError("API key not found in environment variables!")
-
-
-    # Prepare headers and payload
-    headers = {
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json",
-        "HTTP-Referer": "http://localhost:8080",  # required by OpenRouter
-        "X-Title": "Cover Letter Generator"
-    }
-
-    payload = {
-        "model": "deepseek/deepseek-chat-v3-0324",
-        "messages": [
-            {"role": "system", "content": "You are a helpful assistant that writes cover letters."},
-            {"role": "user", "content": prompt}
-        ],
-        "temperature": 0.4,
-        "top_p": 0.8,
-        "max_tokens": 500,
-        "do_sample": True,
-        "repetition_penalty": 1.1
-    }
-
-
+    genai.configure(api_key=apikey)
 
     try:
-        # Send the request to API
-        response = requests.post("https://openrouter.ai/api/v1/chat/completions",
-                                 headers=headers,
-                                 json=payload,
-                                 timeout=30
-                                 )
-        response.raise_for_status()    ## Raise error if response code is not 200
-        result = response.json()
-        return result["choices"][0]["message"]["content"].strip()
-    except requests.exceptions.Timeout:
-        print("❌ Error: Request timed out. Try again later.")
-        return "Request timed out."
-    except requests.exceptions.RequestException as e:
-        raise RuntimeError(f"API request failed: {str(e)}")
+        model = genai.GenerativeModel(model_name="models/gemini-1.5-flash")
+        response = model.generate_content(prompt)
+        print("📬 Raw Gemini Response Object:", response)
 
+        try:
+            result = response.text.strip()
+            print("✅ Gemini Response Text:", result)
+            return result
+        except Exception as e:
+            print("⚠️ Could not extract .text from response:", str(e))
+            return "⚠️ Gemini returned an unrecognized format."
 
+    except Exception as e:
+        raise RuntimeError(f"Gemini API Error: {str(e)}")
+
+# ───────────────────────────────────────
+# 🌐 Route: Home Page (GET/POST)
+# ───────────────────────────────────────
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
         try:
-            # Always store form data early
+            # 🌟 Collect form inputs
             form_data = {
                 "email": request.form.get("email", "").strip(),
                 "phone": request.form.get("phone", "").strip(),
@@ -187,56 +163,54 @@ def index():
                 "linkedin": request.form.get("linkedin", "").strip(),
                 "job_description": request.form.get("job_description", "").strip(),
                 "country_code": request.form.get("country_code", "+91")
-
             }
-            session["form_data"] = form_data
+            session["form_data"] = form_data  # keep user's inputs in session
 
+            # 📎 Check if resume is uploaded
             if "resume" not in request.files:
-                abort(400,"No resume file uploaded")
+                abort(400, "No resume uploaded")
 
             resume_file = request.files["resume"]
             job_text = form_data["job_description"]
 
+            # 🧼 Validate contact info
             full_phone = f'{form_data["country_code"]} {form_data["phone"]}'
             contact_block, warnings = build_clean_contact_block(
-                form_data["email"],
-                full_phone,
-                form_data["github"],
-                form_data["linkedin"]
+                form_data["email"], full_phone, form_data["github"], form_data["linkedin"]
             )
 
-            # Show any contact warnings
+            # ⚠ Show warnings (e.g. bad email)
             if warnings:
-                for w in warnings:
-                    flash(w, "warning")
-                return redirect(url_for("index"))   # Don't proceed to generate the cover letter
+                for msg in warnings:
+                    flash(msg, "warning")
+                return render_template("index.html", form_data=form_data, result=None)
 
-
-
+            # ⛔ File checks
             if resume_file.filename == '':
-                abort(400, "No selected file")
+                abort(400, "No file selected")
             if not allowed_file(resume_file.filename):
-                abort(400, "Only PDF files are allowed")
+                abort(400, "Only PDF files are accepted")
             if len(job_text) < 20:
-                flash("❗ Job description must be at least 20 characters long.", "danger")
-                return redirect(url_for("index"))
+                flash("❗ Job description must be at least 20 characters.", "danger")
+                return render_template("index.html", form_data=form_data, result=None)
 
+            # 📝 Extract resume text + generate letter
             resume_text = extract_txt(resume_file.stream)
+            print("📝 Resume Text:", resume_text[:1000])
+            print("📄 Job Description:", job_text[:1000])
+
             cover_letter = generate_cover_letter(resume_text, job_text, contact_block)
-            session["cover_letter"] = cover_letter
-            session.pop("form_data", None)  # clean after success
-            return redirect(url_for("index"))
+            return render_template("index.html", result=cover_letter, form_data=form_data)
 
         except Exception as e:
             app.logger.error(f"Unexpected error: {str(e)}")
-            abort(500, "Internal server error")
+            abort(500, "Internal Server Error")
 
-    cover_letter = session.pop("cover_letter", None)
-    form_data = session.pop("form_data", {})  # stay safe
-    return render_template("index.html", result=cover_letter, form_data=form_data)
+    # First visit (or GET)
+    return render_template("index.html", result=None, form_data={})
 
-
+# ───────────────────────────────────────
+# 🚀 Run the Flask App (Locally or on Hugging Face)
+# ───────────────────────────────────────
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 7860)))
-
-
