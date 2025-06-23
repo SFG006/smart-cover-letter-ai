@@ -55,7 +55,7 @@ A Flask web app that generates **personalized, professional cover letters** usin
 
 ```bash
 git clone https://github.com/SFG006/smart-cover-letter-ai.git
-cd smart-cover-letter-generator
+cd smart-cover-letter-ai
 ````
 
 ### 🔑 2. Add your Google Gemini API Key
