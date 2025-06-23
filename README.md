@@ -8,8 +8,7 @@ A Flask web app that generates **personalized, professional cover letters** usin
 
 ## 📸 Live Demo
 
-👉 Try it now on [Hugging Face Spaces]([https://huggingface.co/spaces/your-username/cover-letter-generator](https://huggingface.co/spaces/SFG006/smart-cover-letter-ai))  
-> *Replace with your actual Hugging Face link if deployed*
+👉 Try it now on [Hugging Face Spaces]([https://huggingface.co/spaces/your-username/cover-letter-generator](https://huggingface.co/spaces/SFG006/smart-cover-letter-ai))
 
 ---
 
@@ -54,7 +53,7 @@ A Flask web app that generates **personalized, professional cover letters** usin
 ### 🔧 1. Clone the repo
 
 ```bash
-git clone https://github.com/your-username/smart-cover-letter-generator.git
+git clone https://github.com/SFG006/smart-cover-letter-ai.git
 cd smart-cover-letter-generator
 ````
 
@@ -119,5 +118,3 @@ Made by **Shivansh Gupta**
 ## 📜 License
 
 This project is licensed under the **MIT License**.
-
-```
