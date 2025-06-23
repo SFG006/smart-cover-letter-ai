@@ -88,29 +88,10 @@ smart-cover-letter-generator/
 ├── templates/
 │   └── index.html       # Jinja2 template
 ├── static/
-│   └── style.css        # Optional styling
+│   └── style.css        # styling
 ├── requirements.txt     # Python dependencies
 └── README.md            # Project documentation
 ```
-
----
-
-## 🤝 Acknowledgements
-
-* Google Gemini API
-* pdfplumber
-* Bootstrap
-
----
-
-## 💡 Future Improvements
-
-* ✍️ Allow editing before downloading the letter
-* 🗂 Save previous letters
-* 🌐 Add multi-language support
-* 📬 Export to PDF
-
----
 
 ## 🧑‍💻 Author
 
