@@ -2,15 +2,17 @@
 
 A Flask web app that generates **personalized, professional cover letters** using your uploaded resume and a job description — powered by **Gemini AI**.
 
-![Cover_letter_image](https://github.com/user-attachments/assets/b7e0b684-3243-4aeb-83f2-705877a0acff)
+---
 
+## 🚀 Live Demo
+
+Try the app online on [Hugging Face Spaces](https://huggingface.co/spaces/SFG006/smart-cover-letter-ai)
 
 ---
 
-## 📸 Live Demo
+## 📸 Screenshots
 
-👉 Try it now on [Hugging Face Spaces](https://huggingface.co/spaces/SFG006/smart-cover-letter-ai)
-
+![Cover_letter_image](https://github.com/user-attachments/assets/b7e0b684-3243-4aeb-83f2-705877a0acff)
 
 ---
 
@@ -22,7 +24,6 @@ A Flask web app that generates **personalized, professional cover letters** usin
 * 🔍 Performs validation on essential fields (email, phone, GitHub, LinkedIn)
 * ⚡ Integrates with **Gemini 1.5 Flash API** for fast, high-quality text generation
 * 🧩 Built with a simple web interface to test and deploy functionality quickly
-
 
 ---
 
@@ -37,7 +38,6 @@ A Flask web app that generates **personalized, professional cover letters** usin
 
 ---
 
-
 ## 🧱 Tech Stack
 
 | Tool / Library          | Purpose                          |
@@ -47,7 +47,6 @@ A Flask web app that generates **personalized, professional cover letters** usin
 | 🧠 Gemini 1.5 Flash API | AI-powered text generation       |
 | 📄 pdfplumber           | PDF text extraction              |
 | ☁️ Hugging Face Spaces  | Deployment and testing interface |
-
 
 ---
 
