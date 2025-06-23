@@ -1,6 +1,6 @@
-# 📄 Smart Cover Letter Generator
+# 📄 Smart Cover Letter AI
 
-A Flask web app that generates **personalized, professional cover letters** using your uploaded resume and a job description — powered by **Gemini AI (Google Generative AI)**.
+A Flask web app that generates **personalized, professional cover letters** using your uploaded resume and a job description — powered by **Gemini AI**.
 
 ![Cover_letter_image](https://github.com/user-attachments/assets/b7e0b684-3243-4aeb-83f2-705877a0acff)
 
@@ -14,14 +14,15 @@ A Flask web app that generates **personalized, professional cover letters** usin
 
 ---
 
-## 🚀 Features
+## 🛠️ Key Features
 
-- 🔐 Upload your **PDF Resume**
-- 🧠 Paste any **Job Description**
-- 🧾 Instantly receive a **well-written cover letter** tailored to the job
-- ⚙️ Validates email, phone, GitHub, LinkedIn inputs
-- ✨ Powered by **Gemini 1.5 Flash** for fast, smart content generation
-- 💡 Mobile-friendly, clean Bootstrap UI
+* 📄 Accepts and processes **PDF resumes** using robust backend parsing
+* 🧠 Accepts any **job description** and intelligently maps it to your experience
+* ✍️ Generates a **customized, professional cover letter** in real-time
+* 🔍 Performs validation on essential fields (email, phone, GitHub, LinkedIn)
+* ⚡ Integrates with **Gemini 1.5 Flash API** for fast, high-quality text generation
+* 🧩 Built with a simple web interface to test and deploy functionality quickly
+
 
 ---
 
@@ -36,17 +37,17 @@ A Flask web app that generates **personalized, professional cover letters** usin
 
 ---
 
-## 🖥️ Tech Stack
 
-| Tech               | Use                  |
-|--------------------|----------------------|
-| 🐍 Python          | Backend logic         |
-| 🔥 Flask           | Web framework         |
-| 🧠 Gemini AI       | Text generation       |
-| 📄 pdfplumber      | PDF text extraction   |
-| 🎨 Bootstrap 5     | Styling               |
-| 🌍 Jinja2          | Templating engine     |
-| ☁️ Hugging Face/Render | Deployment-ready   |
+## 🧱 Tech Stack
+
+| Tool / Library          | Purpose                          |
+| ----------------------- | -------------------------------- |
+| 🐍 Python               | Core backend language            |
+| 🔥 Flask                | Lightweight web framework        |
+| 🧠 Gemini 1.5 Flash API | AI-powered text generation       |
+| 📄 pdfplumber           | PDF text extraction              |
+| ☁️ Hugging Face Spaces  | Deployment and testing interface |
+
 
 ---
 
