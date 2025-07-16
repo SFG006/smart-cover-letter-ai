@@ -18,7 +18,7 @@ Try the app online on [Hugging Face Spaces](https://huggingface.co/spaces/SFG006
 * 🧠 Accepts any **job description** and intelligently maps it to your experience
 * ✍️ Generates a **customized, professional cover letter** in real-time
 * 🔍 Performs validation on essential fields (email, phone, GitHub, LinkedIn)
-* ⚡ Integrates with **Gemini 1.5 Flash API** for fast, high-quality text generation
+* ⚡ Integrates with **Gemini 2.5 Flash API** for fast, high-quality text generation
 * 🧩 Built with a simple web interface to test and deploy functionality quickly
 
 ---
@@ -40,7 +40,7 @@ Try the app online on [Hugging Face Spaces](https://huggingface.co/spaces/SFG006
 | ----------------------- | -------------------------------- |
 | 🐍 Python               | Core backend language            |
 | 🔥 Flask                | Lightweight web framework        |
-| 🧠 Gemini 1.5 Flash API | AI-powered text generation       |
+| 🧠 Gemini 2.5 Flash API | AI-powered text generation       |
 | 📄 pdfplumber           | PDF text extraction              |
 | ☁️ Hugging Face Spaces  | Deployment and testing interface |
 
