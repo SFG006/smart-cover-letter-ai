@@ -133,7 +133,7 @@ def generate_cover_letter(resume_text, job_text, contact_block):
     genai.configure(api_key=apikey)
 
     try:
-        model = genai.GenerativeModel(model_name="models/gemini-1.5-flash")
+        model = genai.GenerativeModel(model_name="models/gemini-2.5-flash")
         response = model.generate_content(prompt)
         print("📬 Raw Gemini Response Object:", response)
 
