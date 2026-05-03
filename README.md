@@ -6,7 +6,7 @@ A Flask web app that generates **personalized, professional cover letters** usin
 
 ---
 
-## 🚀 Live Demo
+## 🚀 Live
 
 Try the app online on [Hugging Face Spaces](https://huggingface.co/spaces/SFG006/smart-cover-letter-ai)🤗
 
