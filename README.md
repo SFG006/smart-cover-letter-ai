@@ -1,4 +1,4 @@
-# 📄 Smart Cover Letter AI
+#  Smart Cover Letter AI
 
 A Flask web app that generates **personalized, professional cover letters** using your uploaded resume and a job description — powered by **Gemini AI**.
 
@@ -6,24 +6,24 @@ A Flask web app that generates **personalized, professional cover letters** usin
 
 ---
 
-## 🚀 Live
+##  Live
 
 Try the app online on [Hugging Face Spaces](https://sfg006-smart-cover-letter-ai.hf.space)🤗
 
 ---
 
-## 🛠️ Key Features
+##  Key Features
 
-* 📄 Accepts and processes **PDF resumes** using robust backend parsing
-* 🧠 Accepts any **job description** and intelligently maps it to your experience
-* ✍️ Generates a **customized, professional cover letter** in real-time
-* 🔍 Performs validation on essential fields (email, phone, GitHub, LinkedIn)
-* ⚡ Integrates with **Gemini 2.5 Flash API** for fast, high-quality text generation
-* 🧩 Built with a simple web interface to test and deploy functionality quickly
+*  Accepts and processes **PDF resumes** using robust backend parsing
+*  Accepts any **job description** and intelligently maps it to your experience
+*  Generates a **customized, professional cover letter** in real-time
+*  Performs validation on essential fields (email, phone, GitHub, LinkedIn)
+*  Integrates with **Gemini 2.5 Flash API** for fast, high-quality text generation
+*  Built with a simple web interface to test and deploy functionality quickly
 
 ---
 
-## 🧠 How It Works
+##  How It Works
 
 1. **Upload** your resume (PDF format).
 2. **Paste** the full job description.
@@ -34,28 +34,28 @@ Try the app online on [Hugging Face Spaces](https://sfg006-smart-cover-letter-ai
 
 ---
 
-## 🧱 Tech Stack
+##  Tech Stack
 
-| Tool / Library          | Purpose                          |
-| ----------------------- | -------------------------------- |
-| 🐍 Python               | Core backend language            |
-| 🔥 Flask                | Lightweight web framework        |
-| 🧠 Gemini 2.5 Flash API | AI-powered text generation       |
-| 📄 pdfplumber           | PDF text extraction              |
-| ☁️ Hugging Face Spaces  | Deployment and testing interface |
+| Tool / Library        | Purpose                          |
+| --------------------- | -------------------------------- |
+|  Python               | Core backend language            |
+|  Flask                | Lightweight web framework        |
+|  Gemini 2.5 Flash API | AI-powered text generation       |
+|  pdfplumber           | PDF text extraction              |
+|  Hugging Face Spaces  | Deployment and testing interface |
 
 ---
 
-## 📦 Setup Instructions
+##  Setup Instructions
 
-### 🔧 1. Clone the repo
+###  1. Clone the repo
 
 ```bash
 git clone https://github.com/SFG006/smart-cover-letter-ai.git
 cd smart-cover-letter-ai
 ````
 
-### 🔑 2. Add your Google Gemini API Key
+###  2. Add your Google Gemini API Key
 
 Create a `.env` file or set an environment variable:
 
@@ -63,7 +63,7 @@ Create a `.env` file or set an environment variable:
 export GOOGLE_API_KEY=your_api_key_here
 ```
 
-### ▶️ 3. Run the Flask app
+###  3. Run the Flask app
 
 ```bash
 pip install -r requirements.txt
@@ -74,7 +74,7 @@ Visit `http://localhost:7860` to use the app locally.
 
 ---
 
-## 📁 Folder Structure
+##  Folder Structure
 
 ```
 smart-cover-letter-generator/
@@ -88,12 +88,12 @@ smart-cover-letter-generator/
 └── README.md            # Project documentation
 ```
 
-## 🧑‍💻 Author
+##  Author
 
 Made by **Shivansh Gupta**
 
 ---
 
-## 📜 License
+##  License
 
 This project is licensed under the **MIT License**.
