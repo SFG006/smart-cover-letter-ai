@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, abort, redirect, url_for, session, flash
+from flask import Flask, render_template, request, abort, redirect, url_for, flash
 import pdfplumber
 import google.generativeai as genai
 import os
@@ -10,7 +10,7 @@ import re
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 7 * 1024 * 1024  # Restrict file uploads to max 7MB
 app.config['ALLOWED_EXTENSIONS'] = {'pdf'}          # Only allow PDF uploads
-app.secret_key = os.urandom(24)                     # Used for session security
+app.secret_key = os.urandom(24)                    
 
 # ───────────────────────────────────────
 #  File Format Check
@@ -163,7 +163,6 @@ def index():
                 "job_description": request.form.get("job_description", "").strip(),
                 "country_code": request.form.get("country_code", "+91")
             }
-            session["form_data"] = form_data  # keep user's inputs in session
 
             #  Check if resume is uploaded
             if "resume" not in request.files:
