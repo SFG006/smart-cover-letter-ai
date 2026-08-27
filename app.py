@@ -10,7 +10,8 @@ import re
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 7 * 1024 * 1024  # Restrict file uploads to max 7MB
 app.config['ALLOWED_EXTENSIONS'] = {'pdf'}          # Only allow PDF uploads
-app.secret_key = os.urandom(24)                    
+app.secret_key = os.urandom(24)                     # Required by Flask's flash() mechanism, which uses sessions internally
+
 
 # ───────────────────────────────────────
 #  File Format Check
